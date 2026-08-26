@@ -12,7 +12,7 @@ const LABELS: Record<EsimStatus, string> = {
 
 const DOT_COLORS: Record<EsimStatus, string> = {
   pending: colors.warning,
-  active: colors.primary,
+  active: colors.success,
   expired: colors.danger,
 };
 
