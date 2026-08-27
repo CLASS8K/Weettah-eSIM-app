@@ -49,6 +49,11 @@ export default function EsimDetailScreen() {
             Open Settings → Cellular → Add eSIM on your phone and scan this code, or tap the button below to
             simulate landing and activating it on this device.
           </Text>
+          {esim.reminderNotificationId && (
+            <Text style={styles.reminderNote}>
+              🔔 We'll remind you 24 hours before you depart to install it.
+            </Text>
+          )}
           <View style={styles.qrWrapper}>
             <QRCode value={esim.activationCode} size={200} backgroundColor={colors.surfaceLight} color={colors.textDark} />
           </View>
@@ -84,6 +89,12 @@ export default function EsimDetailScreen() {
           <Text style={styles.detailLabel}>Purchased</Text>
           <Text style={styles.detailValue}>{new Date(esim.purchasedAt).toLocaleDateString()}</Text>
         </View>
+        {esim.departureDate && (
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Departs</Text>
+            <Text style={styles.detailValue}>{new Date(esim.departureDate).toLocaleDateString()}</Text>
+          </View>
+        )}
       </View>
 
       <PrimaryButton label="Back to My eSIMs" variant="outline" onPress={() => router.replace('/(tabs)/my-esims')} />
@@ -134,6 +145,14 @@ function getStyles(colors: ColorScheme) {
       textAlign: 'center',
       marginBottom: spacing.lg,
       lineHeight: 18,
+    },
+    reminderNote: {
+      color: colors.primary,
+      fontSize: 12,
+      fontWeight: '600',
+      textAlign: 'center',
+      marginTop: -spacing.sm,
+      marginBottom: spacing.md,
     },
     qrWrapper: {
       backgroundColor: colors.surfaceLight,
