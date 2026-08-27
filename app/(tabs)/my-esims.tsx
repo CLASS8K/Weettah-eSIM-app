@@ -5,10 +5,12 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { StatusPill } from '../../components/StatusPill';
 import { getDestination, getPlan } from '../../lib/data';
 import { PurchasedEsim, useEsims } from '../../lib/esimStore';
-import { colors, radius, spacing } from '../../theme/colors';
+import { ColorScheme, radius, spacing } from '../../theme/colors';
+import { useTheme } from '../../theme/ThemeContext';
 
-function EsimRow({ esim }: { esim: PurchasedEsim }) {
+function EsimRow({ esim, colors }: { esim: PurchasedEsim; colors: ColorScheme }) {
   const router = useRouter();
+  const styles = getStyles(colors);
   const plan = getPlan(esim.planId);
   const destination = getDestination(esim.destinationId);
   if (!plan || !destination) return null;
@@ -31,6 +33,8 @@ function EsimRow({ esim }: { esim: PurchasedEsim }) {
 }
 
 export default function MyEsimsScreen() {
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
   const { esims, loading } = useEsims();
   const router = useRouter();
 
@@ -41,7 +45,7 @@ export default function MyEsimsScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={<Text style={styles.title}>My eSIMs</Text>}
-        renderItem={({ item }) => <EsimRow esim={item} />}
+        renderItem={({ item }) => <EsimRow esim={item} colors={colors} />}
         ListEmptyComponent={
           !loading ? (
             <View style={styles.empty}>
@@ -60,76 +64,78 @@ export default function MyEsimsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
-  listContent: {
-    padding: spacing.lg,
-    paddingBottom: spacing.xl,
-    flexGrow: 1,
-  },
-  title: {
-    color: colors.text,
-    fontSize: 28,
-    fontWeight: '800',
-    marginBottom: spacing.lg,
-  },
-  row: {
-    flexDirection: 'row',
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  pressed: {
-    opacity: 0.75,
-  },
-  flag: {
-    fontSize: 28,
-    marginRight: spacing.md,
-  },
-  info: {
-    flex: 1,
-    gap: 6,
-  },
-  name: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  meta: {
-    color: colors.textMuted,
-    fontSize: 13,
-  },
-  empty: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: spacing.xl * 2,
-  },
-  emptyTitle: {
-    color: colors.text,
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: spacing.xs,
-  },
-  emptySubtitle: {
-    color: colors.textMuted,
-    fontSize: 14,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-    paddingHorizontal: spacing.lg,
-  },
-  emptyButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.lg,
-  },
-  emptyButtonText: {
-    color: colors.textDark,
-    fontWeight: '700',
-  },
-});
+function getStyles(colors: ColorScheme) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bg,
+    },
+    listContent: {
+      padding: spacing.lg,
+      paddingBottom: spacing.xl,
+      flexGrow: 1,
+    },
+    title: {
+      color: colors.text,
+      fontSize: 28,
+      fontWeight: '800',
+      marginBottom: spacing.lg,
+    },
+    row: {
+      flexDirection: 'row',
+      backgroundColor: colors.surface,
+      borderRadius: radius.md,
+      padding: spacing.md,
+      marginBottom: spacing.sm,
+    },
+    pressed: {
+      opacity: 0.75,
+    },
+    flag: {
+      fontSize: 28,
+      marginRight: spacing.md,
+    },
+    info: {
+      flex: 1,
+      gap: 6,
+    },
+    name: {
+      color: colors.text,
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    meta: {
+      color: colors.textMuted,
+      fontSize: 13,
+    },
+    empty: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingTop: spacing.xl * 2,
+    },
+    emptyTitle: {
+      color: colors.text,
+      fontSize: 18,
+      fontWeight: '700',
+      marginBottom: spacing.xs,
+    },
+    emptySubtitle: {
+      color: colors.textMuted,
+      fontSize: 14,
+      textAlign: 'center',
+      marginBottom: spacing.lg,
+      paddingHorizontal: spacing.lg,
+    },
+    emptyButton: {
+      backgroundColor: colors.primary,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.sm,
+      borderRadius: radius.lg,
+    },
+    emptyButtonText: {
+      color: colors.onPrimary,
+      fontWeight: '700',
+    },
+  });
+}

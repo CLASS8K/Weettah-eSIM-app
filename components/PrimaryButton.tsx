@@ -1,7 +1,8 @@
 import React from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text } from 'react-native';
 
-import { colors, radius, spacing } from '../theme/colors';
+import { ColorScheme, radius, spacing } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
 
 type Props = {
   label: string;
@@ -12,6 +13,8 @@ type Props = {
 };
 
 export function PrimaryButton({ label, onPress, loading, disabled, variant = 'primary' }: Props) {
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
   const isOutline = variant === 'outline';
   return (
     <Pressable
@@ -25,7 +28,7 @@ export function PrimaryButton({ label, onPress, loading, disabled, variant = 'pr
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={isOutline ? colors.primary : colors.textDark} />
+        <ActivityIndicator color={isOutline ? colors.primary : colors.onPrimary} />
       ) : (
         <Text style={[styles.label, isOutline ? styles.labelOutline : styles.labelPrimary]}>{label}</Text>
       )}
@@ -33,35 +36,37 @@ export function PrimaryButton({ label, onPress, loading, disabled, variant = 'pr
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    borderRadius: radius.lg,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  primary: {
-    backgroundColor: colors.primary,
-  },
-  outline: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: colors.primary,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  pressed: {
-    opacity: 0.85,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  labelPrimary: {
-    color: colors.textDark,
-  },
-  labelOutline: {
-    color: colors.primary,
-  },
-});
+function getStyles(colors: ColorScheme) {
+  return StyleSheet.create({
+    base: {
+      borderRadius: radius.lg,
+      paddingVertical: spacing.md,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    primary: {
+      backgroundColor: colors.primary,
+    },
+    outline: {
+      backgroundColor: 'transparent',
+      borderWidth: 1.5,
+      borderColor: colors.primary,
+    },
+    disabled: {
+      opacity: 0.5,
+    },
+    pressed: {
+      opacity: 0.85,
+    },
+    label: {
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    labelPrimary: {
+      color: colors.onPrimary,
+    },
+    labelOutline: {
+      color: colors.primary,
+    },
+  });
+}

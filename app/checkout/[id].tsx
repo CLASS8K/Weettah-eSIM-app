@@ -5,11 +5,14 @@ import { StyleSheet, Text, View } from 'react-native';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { getDestination, getPlan } from '../../lib/data';
 import { useEsims } from '../../lib/esimStore';
-import { colors, radius, spacing } from '../../theme/colors';
+import { ColorScheme, radius, spacing } from '../../theme/colors';
+import { useTheme } from '../../theme/ThemeContext';
 
 export default function CheckoutScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
   const { purchaseEsim } = useEsims();
   const [processing, setProcessing] = useState(false);
 
@@ -73,69 +76,71 @@ export default function CheckoutScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bg,
-    padding: spacing.lg,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.sm,
-  },
-  label: {
-    color: colors.textMuted,
-    fontSize: 14,
-  },
-  value: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: colors.border,
-    marginVertical: spacing.sm,
-  },
-  totalLabel: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  totalValue: {
-    color: colors.primary,
-    fontSize: 20,
-    fontWeight: '800',
-  },
-  paymentCard: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    padding: spacing.md,
-    marginTop: spacing.lg,
-  },
-  paymentLabel: {
-    color: colors.textMuted,
-    fontSize: 12,
-    marginBottom: 4,
-  },
-  paymentValue: {
-    color: colors.text,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  spacer: {
-    flex: 1,
-    minHeight: spacing.xl,
-  },
-  disclaimer: {
-    color: colors.textMuted,
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: spacing.sm,
-  },
-  notFound: {
-    color: colors.textMuted,
-    padding: spacing.lg,
-  },
-});
+function getStyles(colors: ColorScheme) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bg,
+      padding: spacing.lg,
+    },
+    row: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingVertical: spacing.sm,
+    },
+    label: {
+      color: colors.textMuted,
+      fontSize: 14,
+    },
+    value: {
+      color: colors.text,
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    divider: {
+      height: 1,
+      backgroundColor: colors.border,
+      marginVertical: spacing.sm,
+    },
+    totalLabel: {
+      color: colors.text,
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    totalValue: {
+      color: colors.primary,
+      fontSize: 20,
+      fontWeight: '800',
+    },
+    paymentCard: {
+      backgroundColor: colors.surface,
+      borderRadius: radius.md,
+      padding: spacing.md,
+      marginTop: spacing.lg,
+    },
+    paymentLabel: {
+      color: colors.textMuted,
+      fontSize: 12,
+      marginBottom: 4,
+    },
+    paymentValue: {
+      color: colors.text,
+      fontSize: 15,
+      fontWeight: '600',
+    },
+    spacer: {
+      flex: 1,
+      minHeight: spacing.xl,
+    },
+    disclaimer: {
+      color: colors.textMuted,
+      fontSize: 12,
+      textAlign: 'center',
+      marginTop: spacing.sm,
+    },
+    notFound: {
+      color: colors.textMuted,
+      padding: spacing.lg,
+    },
+  });
+}

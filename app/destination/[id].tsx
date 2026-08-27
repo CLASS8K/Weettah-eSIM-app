@@ -4,11 +4,14 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { PlanCard } from '../../components/PlanCard';
 import { getDestination, getPlansForDestination } from '../../lib/data';
-import { colors, spacing } from '../../theme/colors';
+import { ColorScheme, spacing } from '../../theme/colors';
+import { useTheme } from '../../theme/ThemeContext';
 
 export default function DestinationScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
   const destination = getDestination(id);
   const plans = getPlansForDestination(id);
 
@@ -43,41 +46,43 @@ export default function DestinationScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
-  listContent: {
-    padding: spacing.lg,
-    paddingBottom: spacing.xl,
-  },
-  header: {
-    marginBottom: spacing.md,
-  },
-  flag: {
-    fontSize: 40,
-  },
-  name: {
-    color: colors.text,
-    fontSize: 24,
-    fontWeight: '800',
-    marginTop: spacing.xs,
-  },
-  coverage: {
-    color: colors.textMuted,
-    fontSize: 13,
-    marginTop: 4,
-    marginBottom: spacing.lg,
-  },
-  sectionLabel: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: spacing.sm,
-  },
-  notFound: {
-    color: colors.textMuted,
-    padding: spacing.lg,
-  },
-});
+function getStyles(colors: ColorScheme) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bg,
+    },
+    listContent: {
+      padding: spacing.lg,
+      paddingBottom: spacing.xl,
+    },
+    header: {
+      marginBottom: spacing.md,
+    },
+    flag: {
+      fontSize: 40,
+    },
+    name: {
+      color: colors.text,
+      fontSize: 24,
+      fontWeight: '800',
+      marginTop: spacing.xs,
+    },
+    coverage: {
+      color: colors.textMuted,
+      fontSize: 13,
+      marginTop: 4,
+      marginBottom: spacing.lg,
+    },
+    sectionLabel: {
+      color: colors.text,
+      fontSize: 16,
+      fontWeight: '700',
+      marginBottom: spacing.sm,
+    },
+    notFound: {
+      color: colors.textMuted,
+      padding: spacing.lg,
+    },
+  });
+}

@@ -13,23 +13,93 @@ export type Destination = {
   region: string;
   flag: string;
   coverage: string[];
+  /** Local-language greeting, shown alongside the English welcome on landing. */
+  salutation: string;
+  /** A couple of colors from the destination's flag, used to accent the landed-welcome banner. */
+  flagColors: [string, string] | [string, string, string];
 };
 
 export const destinations: Destination[] = [
-  { id: 'japan', name: 'Japan', region: 'Asia', flag: '🇯🇵', coverage: ['NTT Docomo', 'SoftBank'] },
-  { id: 'usa', name: 'United States', region: 'North America', flag: '🇺🇸', coverage: ['T-Mobile', 'AT&T'] },
-  { id: 'france', name: 'France', region: 'Europe', flag: '🇫🇷', coverage: ['Orange', 'SFR'] },
-  { id: 'thailand', name: 'Thailand', region: 'Asia', flag: '🇹🇭', coverage: ['AIS', 'True Move'] },
-  { id: 'uk', name: 'United Kingdom', region: 'Europe', flag: '🇬🇧', coverage: ['EE', 'Vodafone'] },
-  { id: 'uae', name: 'United Arab Emirates', region: 'Middle East', flag: '🇦🇪', coverage: ['Etisalat', 'du'] },
-  { id: 'australia', name: 'Australia', region: 'Oceania', flag: '🇦🇺', coverage: ['Telstra', 'Optus'] },
-  { id: 'mexico', name: 'Mexico', region: 'North America', flag: '🇲🇽', coverage: ['Telcel', 'AT&T'] },
+  {
+    id: 'japan',
+    name: 'Japan',
+    region: 'Asia',
+    flag: '🇯🇵',
+    coverage: ['NTT Docomo', 'SoftBank'],
+    salutation: 'Konnichiwa',
+    flagColors: ['#BC002D', '#FFFFFF'],
+  },
+  {
+    id: 'usa',
+    name: 'United States',
+    region: 'North America',
+    flag: '🇺🇸',
+    coverage: ['T-Mobile', 'AT&T'],
+    salutation: 'Hello',
+    flagColors: ['#3C3B6E', '#B22234', '#FFFFFF'],
+  },
+  {
+    id: 'france',
+    name: 'France',
+    region: 'Europe',
+    flag: '🇫🇷',
+    coverage: ['Orange', 'SFR'],
+    salutation: 'Bonjour',
+    flagColors: ['#0055A4', '#FFFFFF', '#EF4135'],
+  },
+  {
+    id: 'thailand',
+    name: 'Thailand',
+    region: 'Asia',
+    flag: '🇹🇭',
+    coverage: ['AIS', 'True Move'],
+    salutation: 'Sawatdee',
+    flagColors: ['#A51931', '#2D2A4A'],
+  },
+  {
+    id: 'uk',
+    name: 'United Kingdom',
+    region: 'Europe',
+    flag: '🇬🇧',
+    coverage: ['EE', 'Vodafone'],
+    salutation: 'Hello',
+    flagColors: ['#012169', '#C8102E', '#FFFFFF'],
+  },
+  {
+    id: 'uae',
+    name: 'United Arab Emirates',
+    region: 'Middle East',
+    flag: '🇦🇪',
+    coverage: ['Etisalat', 'du'],
+    salutation: 'Marhaba',
+    flagColors: ['#00732F', '#FF0000'],
+  },
+  {
+    id: 'australia',
+    name: 'Australia',
+    region: 'Oceania',
+    flag: '🇦🇺',
+    coverage: ['Telstra', 'Optus'],
+    salutation: "G'day",
+    flagColors: ['#00008B', '#FF0000', '#FFFFFF'],
+  },
+  {
+    id: 'mexico',
+    name: 'Mexico',
+    region: 'North America',
+    flag: '🇲🇽',
+    coverage: ['Telcel', 'AT&T'],
+    salutation: 'Hola',
+    flagColors: ['#006341', '#CE1126'],
+  },
   {
     id: 'europe',
     name: 'Europe (30 countries)',
     region: 'Regional',
     flag: '🇪🇺',
     coverage: ['Multi-carrier regional network'],
+    salutation: 'Bonjour · Hallo · Ciao',
+    flagColors: ['#003399', '#FFCC00'],
   },
 ];
 

@@ -6,12 +6,15 @@ import QRCode from 'react-native-qrcode-svg';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { StatusPill } from '../../components/StatusPill';
 import { getDestination, getPlan } from '../../lib/data';
-import { useEsims } from '../../lib/esimStore';
-import { colors, radius, spacing } from '../../theme/colors';
+import { getSimulatedDataUsedGb, useEsims } from '../../lib/esimStore';
+import { ColorScheme, radius, spacing } from '../../theme/colors';
+import { useTheme } from '../../theme/ThemeContext';
 
 export default function EsimDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { colors } = useTheme();
+  const styles = getStyles(colors);
   const { esims, activateEsim } = useEsims();
 
   const esim = esims.find((e) => e.id === id);
@@ -26,7 +29,8 @@ export default function EsimDetailScreen() {
     );
   }
 
-  const remainingGb = Math.max(plan.dataAmountGb - esim.dataUsedGb, 0);
+  const usedGb = getSimulatedDataUsedGb(esim, plan);
+  const remainingGb = Math.max(plan.dataAmountGb - usedGb, 0);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -43,13 +47,13 @@ export default function EsimDetailScreen() {
           <Text style={styles.qrTitle}>Scan to install</Text>
           <Text style={styles.qrSubtitle}>
             Open Settings → Cellular → Add eSIM on your phone and scan this code, or tap the button below to
-            simulate installing it on this device.
+            simulate landing and activating it on this device.
           </Text>
           <View style={styles.qrWrapper}>
             <QRCode value={esim.activationCode} size={200} backgroundColor={colors.surfaceLight} color={colors.textDark} />
           </View>
           <Text style={styles.activationCode}>{esim.activationCode}</Text>
-          <PrimaryButton label="Simulate install" onPress={() => activateEsim(esim.id)} />
+          <PrimaryButton label="I've landed — activate" onPress={() => activateEsim(esim.id)} />
         </View>
       ) : (
         <View style={styles.statsCard}>
@@ -87,107 +91,109 @@ export default function EsimDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.bg,
-  },
-  content: {
-    padding: spacing.lg,
-    paddingBottom: spacing.xl,
-    gap: spacing.md,
-  },
-  headerCard: {
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  flag: {
-    fontSize: 40,
-  },
-  name: {
-    color: colors.text,
-    fontSize: 22,
-    fontWeight: '800',
-    marginTop: spacing.xs,
-    marginBottom: spacing.sm,
-  },
-  qrCard: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-    alignItems: 'center',
-  },
-  qrTitle: {
-    color: colors.text,
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: spacing.xs,
-  },
-  qrSubtitle: {
-    color: colors.textMuted,
-    fontSize: 13,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-    lineHeight: 18,
-  },
-  qrWrapper: {
-    backgroundColor: colors.surfaceLight,
-    padding: spacing.md,
-    borderRadius: radius.md,
-    marginBottom: spacing.md,
-  },
-  activationCode: {
-    color: colors.textMuted,
-    fontSize: 11,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  statsCard: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-  },
-  statRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: spacing.xs,
-  },
-  statLabel: {
-    color: colors.textMuted,
-    fontSize: 14,
-  },
-  statValue: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  detailsCard: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
-  },
-  detailsTitle: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '700',
-    marginBottom: spacing.sm,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 4,
-  },
-  detailLabel: {
-    color: colors.textMuted,
-    fontSize: 13,
-  },
-  detailValue: {
-    color: colors.text,
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  notFound: {
-    color: colors.textMuted,
-    padding: spacing.lg,
-  },
-});
+function getStyles(colors: ColorScheme) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.bg,
+    },
+    content: {
+      padding: spacing.lg,
+      paddingBottom: spacing.xl,
+      gap: spacing.md,
+    },
+    headerCard: {
+      alignItems: 'center',
+      marginBottom: spacing.sm,
+    },
+    flag: {
+      fontSize: 40,
+    },
+    name: {
+      color: colors.text,
+      fontSize: 22,
+      fontWeight: '800',
+      marginTop: spacing.xs,
+      marginBottom: spacing.sm,
+    },
+    qrCard: {
+      backgroundColor: colors.surface,
+      borderRadius: radius.lg,
+      padding: spacing.lg,
+      alignItems: 'center',
+    },
+    qrTitle: {
+      color: colors.text,
+      fontSize: 18,
+      fontWeight: '700',
+      marginBottom: spacing.xs,
+    },
+    qrSubtitle: {
+      color: colors.textMuted,
+      fontSize: 13,
+      textAlign: 'center',
+      marginBottom: spacing.lg,
+      lineHeight: 18,
+    },
+    qrWrapper: {
+      backgroundColor: colors.surfaceLight,
+      padding: spacing.md,
+      borderRadius: radius.md,
+      marginBottom: spacing.md,
+    },
+    activationCode: {
+      color: colors.textMuted,
+      fontSize: 11,
+      textAlign: 'center',
+      marginBottom: spacing.lg,
+    },
+    statsCard: {
+      backgroundColor: colors.surface,
+      borderRadius: radius.lg,
+      padding: spacing.lg,
+    },
+    statRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingVertical: spacing.xs,
+    },
+    statLabel: {
+      color: colors.textMuted,
+      fontSize: 14,
+    },
+    statValue: {
+      color: colors.text,
+      fontSize: 14,
+      fontWeight: '700',
+    },
+    detailsCard: {
+      backgroundColor: colors.surface,
+      borderRadius: radius.lg,
+      padding: spacing.lg,
+    },
+    detailsTitle: {
+      color: colors.text,
+      fontSize: 14,
+      fontWeight: '700',
+      marginBottom: spacing.sm,
+    },
+    detailRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingVertical: 4,
+    },
+    detailLabel: {
+      color: colors.textMuted,
+      fontSize: 13,
+    },
+    detailValue: {
+      color: colors.text,
+      fontSize: 13,
+      fontWeight: '600',
+    },
+    notFound: {
+      color: colors.textMuted,
+      padding: spacing.lg,
+    },
+  });
+}
