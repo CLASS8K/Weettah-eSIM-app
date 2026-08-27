@@ -2,13 +2,15 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { Text } from 'react-native';
 
-import { colors } from '../../theme/colors';
+import { useTheme } from '../../theme/ThemeContext';
 
 function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
   return <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>{emoji}</Text>;
 }
 
 export default function TabsLayout() {
+  const { colors } = useTheme();
+
   return (
     <Tabs
       screenOptions={{
@@ -32,6 +34,13 @@ export default function TabsLayout() {
         options={{
           title: 'My eSIMs',
           tabBarIcon: ({ focused }) => <TabIcon emoji="📶" focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="usage"
+        options={{
+          title: 'Usage',
+          tabBarIcon: ({ focused }) => <TabIcon emoji="📊" focused={focused} />,
         }}
       />
       <Tabs.Screen

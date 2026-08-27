@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-import { getPlan } from './data';
+import { getPlan, Plan } from './data';
 
 export type EsimStatus = 'pending' | 'active' | 'expired';
 
@@ -10,6 +10,7 @@ export type PurchasedEsim = {
   planId: string;
   destinationId: string;
   purchasedAt: string;
+  activatedAt: string | null;
   status: EsimStatus;
   iccid: string;
   activationCode: string;
@@ -19,11 +20,14 @@ export type PurchasedEsim = {
 type EsimStore = {
   esims: PurchasedEsim[];
   loading: boolean;
+  landedDestinationId: string | null;
   purchaseEsim: (planId: string) => PurchasedEsim;
   activateEsim: (id: string) => void;
+  clearLanded: () => void;
 };
 
-const STORAGE_KEY = 'takeflyt.esims.v1';
+const ESIMS_STORAGE_KEY = 'takeflyt.esims.v1';
+const LANDED_STORAGE_KEY = 'takeflyt.landed.v1';
 
 const EsimContext = createContext<EsimStore | null>(null);
 
@@ -44,28 +48,59 @@ function generateActivationCode(destinationId: string): string {
   return `LPA:1$smdp.takeflyt.com$${destinationId.toUpperCase()}-${token}`;
 }
 
+/** Deterministic 0..1 value derived from an id, so usage pacing is stable across renders. */
+function seededRatio(id: string): number {
+  let hash = 0;
+  for (let i = 0; i < id.length; i += 1) {
+    hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  }
+  return (hash % 1000) / 1000;
+}
+
+/** Simulates gradual data usage since activation, since there's no real network to meter. */
+export function getSimulatedDataUsedGb(esim: PurchasedEsim, plan: Plan): number {
+  if (esim.status !== 'active' || !esim.activatedAt) return esim.dataUsedGb;
+  const elapsedDays = (Date.now() - new Date(esim.activatedAt).getTime()) / (1000 * 60 * 60 * 24);
+  const pace = 0.65 + seededRatio(esim.id) * 0.3; // varies 65%-95% pacing between travelers
+  const fractionOfValidity = Math.min(Math.max(elapsedDays, 0) / plan.validityDays, 1);
+  return Math.min(fractionOfValidity * pace * plan.dataAmountGb, plan.dataAmountGb);
+}
+
 export function EsimProvider({ children }: { children: React.ReactNode }) {
   const [esims, setEsims] = useState<PurchasedEsim[]>([]);
+  const [landedDestinationId, setLandedDestinationId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY)
-      .then((raw) => {
-        if (raw) setEsims(JSON.parse(raw));
+    Promise.all([AsyncStorage.getItem(ESIMS_STORAGE_KEY), AsyncStorage.getItem(LANDED_STORAGE_KEY)])
+      .then(([rawEsims, rawLanded]) => {
+        if (rawEsims) setEsims(JSON.parse(rawEsims));
+        if (rawLanded) setLandedDestinationId(rawLanded);
       })
       .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
     if (!loading) {
-      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(esims)).catch(() => {});
+      AsyncStorage.setItem(ESIMS_STORAGE_KEY, JSON.stringify(esims)).catch(() => {});
     }
   }, [esims, loading]);
+
+  useEffect(() => {
+    if (!loading) {
+      if (landedDestinationId) {
+        AsyncStorage.setItem(LANDED_STORAGE_KEY, landedDestinationId).catch(() => {});
+      } else {
+        AsyncStorage.removeItem(LANDED_STORAGE_KEY).catch(() => {});
+      }
+    }
+  }, [landedDestinationId, loading]);
 
   const value = useMemo<EsimStore>(
     () => ({
       esims,
       loading,
+      landedDestinationId,
       purchaseEsim: (planId: string) => {
         const plan = getPlan(planId);
         if (!plan) throw new Error(`Unknown plan: ${planId}`);
@@ -74,6 +109,7 @@ export function EsimProvider({ children }: { children: React.ReactNode }) {
           planId,
           destinationId: plan.destinationId,
           purchasedAt: new Date().toISOString(),
+          activatedAt: null,
           status: 'pending',
           iccid: generateIccid(),
           activationCode: generateActivationCode(plan.destinationId),
@@ -83,10 +119,15 @@ export function EsimProvider({ children }: { children: React.ReactNode }) {
         return esim;
       },
       activateEsim: (id: string) => {
-        setEsims((prev) => prev.map((e) => (e.id === id ? { ...e, status: 'active' } : e)));
+        setEsims((prev) => {
+          const esim = prev.find((e) => e.id === id);
+          if (esim) setLandedDestinationId(esim.destinationId);
+          return prev.map((e) => (e.id === id ? { ...e, status: 'active', activatedAt: new Date().toISOString() } : e));
+        });
       },
+      clearLanded: () => setLandedDestinationId(null),
     }),
-    [esims, loading]
+    [esims, loading, landedDestinationId]
   );
 
   return <EsimContext.Provider value={value}>{children}</EsimContext.Provider>;
