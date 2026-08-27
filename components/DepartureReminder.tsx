@@ -20,6 +20,9 @@ export function DepartureReminder({ esim, destination }: { esim: PurchasedEsim; 
         <Text style={styles.body}>
           Your {destination.flag} {destination.name} eSIM is ready — install it before you depart so it's live the
           moment you land.
+          {esim.reminderNotificationId
+            ? " We've also scheduled a reminder for you."
+            : ''}
         </Text>
       </View>
     </Pressable>

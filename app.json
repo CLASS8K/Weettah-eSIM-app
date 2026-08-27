@@ -34,6 +34,12 @@
         {
           "cameraPermission": "TakeFlyt uses the camera to let you scan and install eSIM QR codes."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#19D3F3"
+        }
       ]
     ],
     "experiments": {

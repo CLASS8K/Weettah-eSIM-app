@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-import { getPlan, Plan } from './data';
+import { getDestination, getPlan, Plan } from './data';
+import { cancelDepartureReminder, scheduleDepartureReminder } from './notifications';
 
 export type EsimStatus = 'pending' | 'active' | 'expired';
 
@@ -15,13 +16,17 @@ export type PurchasedEsim = {
   iccid: string;
   activationCode: string;
   dataUsedGb: number;
+  /** ISO date string for when the traveler expects to depart, if they gave one at purchase. */
+  departureDate: string | null;
+  /** id of the scheduled local reminder notification, if one was scheduled. */
+  reminderNotificationId: string | null;
 };
 
 type EsimStore = {
   esims: PurchasedEsim[];
   loading: boolean;
   landedDestinationId: string | null;
-  purchaseEsim: (planId: string) => PurchasedEsim;
+  purchaseEsim: (planId: string, departureDate?: Date) => PurchasedEsim;
   activateEsim: (id: string) => void;
   clearLanded: () => void;
 };
@@ -101,7 +106,7 @@ export function EsimProvider({ children }: { children: React.ReactNode }) {
       esims,
       loading,
       landedDestinationId,
-      purchaseEsim: (planId: string) => {
+      purchaseEsim: (planId: string, departureDate?: Date) => {
         const plan = getPlan(planId);
         if (!plan) throw new Error(`Unknown plan: ${planId}`);
         const esim: PurchasedEsim = {
@@ -114,15 +119,41 @@ export function EsimProvider({ children }: { children: React.ReactNode }) {
           iccid: generateIccid(),
           activationCode: generateActivationCode(plan.destinationId),
           dataUsedGb: 0,
+          departureDate: departureDate ? departureDate.toISOString() : null,
+          reminderNotificationId: null,
         };
         setEsims((prev) => [esim, ...prev]);
+
+        // Fire-and-forget: don't block the purchase (or a permission prompt) on this.
+        if (departureDate) {
+          const destination = getDestination(plan.destinationId);
+          scheduleDepartureReminder({ destinationName: destination?.name ?? 'trip', departureDate }).then(
+            (notificationId) => {
+              if (notificationId) {
+                setEsims((prev) =>
+                  prev.map((e) => (e.id === esim.id ? { ...e, reminderNotificationId: notificationId } : e))
+                );
+              }
+            }
+          );
+        }
+
         return esim;
       },
       activateEsim: (id: string) => {
         setEsims((prev) => {
           const esim = prev.find((e) => e.id === id);
-          if (esim) setLandedDestinationId(esim.destinationId);
-          return prev.map((e) => (e.id === id ? { ...e, status: 'active', activatedAt: new Date().toISOString() } : e));
+          if (esim) {
+            setLandedDestinationId(esim.destinationId);
+            if (esim.reminderNotificationId) {
+              cancelDepartureReminder(esim.reminderNotificationId);
+            }
+          }
+          return prev.map((e) =>
+            e.id === id
+              ? { ...e, status: 'active', activatedAt: new Date().toISOString(), reminderNotificationId: null }
+              : e
+          );
         });
       },
       clearLanded: () => setLandedDestinationId(null),
