@@ -61,7 +61,7 @@ export default function AccountScreen() {
         ))}
       </View>
 
-      <Text style={styles.version}>TakeFlyt v1.0.0</Text>
+      <Text style={styles.version}>Weettah v1.0.0</Text>
     </ScrollView>
   );
 }

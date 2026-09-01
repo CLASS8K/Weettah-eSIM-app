@@ -63,7 +63,7 @@ export default function OnboardingScreen() {
         <View style={styles.stepFill}>
           <View style={styles.heroSpacer} />
           <Text style={styles.eyebrow}>THE NEW STANDARD</Text>
-          <Text style={styles.hero}>TakeFlyt</Text>
+          <Text style={styles.hero}>Weettah</Text>
           <Text style={styles.heroTagline}>Connectivity that just works, everywhere you land.</Text>
           <View style={{ flex: 1 }} />
           <PrimaryButton label="Get started" onPress={() => setStep(2)} />
@@ -160,7 +160,7 @@ export default function OnboardingScreen() {
             Your {planDestination.name} eSIM profile is active. Welcome to the future of travel.
           </Text>
           <View style={{ flex: 1 }} />
-          <PrimaryButton label="Enter TakeFlyt" onPress={handleFinish} />
+          <PrimaryButton label="Enter Weettah" onPress={handleFinish} />
         </View>
       )}
     </View>

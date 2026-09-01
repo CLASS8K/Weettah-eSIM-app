@@ -1,4 +1,5 @@
-// Sourced from takeflyt.app's brand tokens (:root CSS custom properties).
+// Weettah brand tokens (:root CSS custom properties), carried over from
+// the brand's palette before the rename from TakeFlyt.
 // Dark surfaces get the more vivid brand color (cyan); light surfaces get
 // the higher-contrast anchor color (blue) — both are the two stops of the
 // brand's own --gradient-cta.

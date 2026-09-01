@@ -1,4 +1,4 @@
-# TakeFlyt
+# Weettah
 
 A cross-platform (iOS + Android) mobile app for browsing and buying travel eSIMs, built with [Expo](https://expo.dev) + React Native + TypeScript.
 
@@ -56,6 +56,6 @@ theme/colors.ts           Design tokens (colors, spacing, radius)
 - [ ] Real payment provider (Stripe, RevenueCat, etc.) in `app/checkout/[id].tsx`
 - [ ] User authentication and account sync (currently local-only, unauthenticated)
 - [ ] Push notifications for low-data / plan-expiry alerts
-- [ ] Replace default Expo placeholder icons/splash in `assets/` with TakeFlyt branding
+- [ ] Replace default Expo placeholder icons/splash in `assets/` with Weettah branding
 - [ ] Error/loading states and retry handling once network calls are introduced
 - [ ] Analytics and crash reporting

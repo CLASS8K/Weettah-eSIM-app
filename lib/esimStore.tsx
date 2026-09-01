@@ -31,8 +31,8 @@ type EsimStore = {
   clearLanded: () => void;
 };
 
-const ESIMS_STORAGE_KEY = 'takeflyt.esims.v1';
-const LANDED_STORAGE_KEY = 'takeflyt.landed.v1';
+const ESIMS_STORAGE_KEY = 'weettah.esims.v1';
+const LANDED_STORAGE_KEY = 'weettah.landed.v1';
 
 const EsimContext = createContext<EsimStore | null>(null);
 
@@ -50,7 +50,7 @@ function generateIccid(): string {
 
 function generateActivationCode(destinationId: string): string {
   const token = randomDigits(10);
-  return `LPA:1$smdp.takeflyt.com$${destinationId.toUpperCase()}-${token}`;
+  return `LPA:1$smdp.weettah.com$${destinationId.toUpperCase()}-${token}`;
 }
 
 /** Deterministic 0..1 value derived from an id, so usage pacing is stable across renders. */
