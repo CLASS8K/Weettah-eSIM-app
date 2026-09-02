@@ -35,7 +35,7 @@ export default function ExploreScreen() {
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={
           <View>
-            <Text style={styles.title}>TakeFlyt</Text>
+            <Text style={styles.title}>Weettah</Text>
             <Text style={styles.subtitle}>Stay connected the moment you land. Instant eSIMs, 190+ destinations.</Text>
 
             {landedDestination && <LandedBanner destination={landedDestination} onDismiss={clearLanded} />}

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-const STORAGE_KEY = 'takeflyt.onboarding.completed.v1';
+const STORAGE_KEY = 'weettah.onboarding.completed.v1';
 
 type OnboardingStore = {
   /** null while the persisted flag is still loading. */

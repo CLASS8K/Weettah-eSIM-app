@@ -13,7 +13,7 @@ type ThemeStore = {
   loading: boolean;
 };
 
-const STORAGE_KEY = 'takeflyt.theme.v1';
+const STORAGE_KEY = 'weettah.theme.v1';
 
 const ThemeContext = createContext<ThemeStore | null>(null);
 
